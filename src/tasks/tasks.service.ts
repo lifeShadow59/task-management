@@ -43,6 +43,15 @@ export class TasksService {
     }
 
     getTaskThruFilter(getTasksFilterDto: GetTasksFilterDto): Task[] {
-        return this.tasksList.filter(task => task.status === getTasksFilterDto.status && task.description.search(getTasksFilterDto.search) !== -1);
+        const { status, search } = getTasksFilterDto;
+
+        let tasks: Task[] = this.getAllTasks();
+        if (status) {
+            tasks = tasks.filter(task => task.status === status);
+        }
+        if (search) {
+            tasks = tasks.filter(task => task.title.includes(search) || task.description.includes(search))
+        }
+        return tasks;
     }
 }
