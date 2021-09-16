@@ -1,4 +1,7 @@
-import { ConflictException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { UserCredentialsDto } from './dto/user-credentials.dto';
 import { User } from './user.entity';
@@ -15,9 +18,16 @@ export class UserRepository extends Repository<User> {
     try {
       await this.save(user);
     } catch (error) {
-        console.log(error.detail.find('userName'));
-      if(error.code == 23505){
-          throw new ConflictException(error.detail);
+      console.log();
+      if (error.code === '23505') {
+        if (error.detail.find('userName') != -1) {
+          throw new ConflictException('User name not available. ');
+        }
+        if (error.detail.find('email') != -1) {
+          throw new ConflictException('Email not available. ');
+        }
+      } else {
+        throw new InternalServerErrorException();
       }
     }
   }
