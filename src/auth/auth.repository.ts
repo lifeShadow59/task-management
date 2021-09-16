@@ -1,11 +1,14 @@
 import {
   ConflictException,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { SignUpCredentialsDto } from './dto/signup-credentials.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { SignInCredentialsDto } from './dto/signin-credemtials.dto';
+import { JwtPayloadInterface } from './jwt-payload.interface';
 
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
@@ -33,6 +36,17 @@ export class AuthRepository extends Repository<User> {
       } else {
         throw new InternalServerErrorException();
       }
+    }
+  }
+
+  async signIn(signInCredentialsDto: SignInCredentialsDto): Promise<boolean> {
+    const { email, password } = signInCredentialsDto;
+    const _user: SignUpCredentialsDto = await this.findOne({ email });
+    if (_user && (bcrypt.compare(password, _user.password))) {
+      return true;
+    }
+    else {
+      throw new UnauthorizedException('Password Not Match');
     }
   }
 }
