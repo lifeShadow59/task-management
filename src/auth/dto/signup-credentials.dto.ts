@@ -6,7 +6,7 @@ import {
     MinLength,
 } from 'class-validator';
 
-export class UserCredentialsDto {
+export class SignUpCredentialsDto {
     @IsNotEmpty()
     @MinLength(6)
     @MaxLength(12)

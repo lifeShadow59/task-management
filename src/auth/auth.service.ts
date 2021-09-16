@@ -1,16 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { UserModel } from './user.model';
-import { UserRepository } from './user.repository';
+import { AuthRepository } from './auth.repository';
+import { SignInCredentialsDto } from './dto/signin-credemtials.dto';
+import * as bcrypt from 'bcrypt';
+import { SignUpCredentialsDto } from './dto/signup-credentials.dto';
+import { throwError } from 'rxjs';
+
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(UserRepository)
-        private userRepository: UserRepository) { }
+        @InjectRepository(AuthRepository)
+        private authRepository: AuthRepository) { }
 
-    signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-        return this.userRepository.signUp(authCredentialsDto);
+    signUp(signUpCredentialsDto: SignUpCredentialsDto): Promise<void> {
+        return this.authRepository.signUp(signUpCredentialsDto);
+    }
+
+    async signIn(signInCredentialsDto: SignInCredentialsDto) {
+        const { email, password } = signInCredentialsDto;
+        const _user: SignUpCredentialsDto = await this.authRepository.findOne({ email });
+        if (_user && (bcrypt.compare(password, _user.password))) {
+            console.log("yes");
+        }
+        else {
+            throw new UnauthorizedException('Password Not Match');
+        }
     }
 }
