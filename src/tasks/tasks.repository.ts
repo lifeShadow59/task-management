@@ -17,8 +17,8 @@ export class TaskRepository extends Repository<Task>{
 
 
     //* Get Task By ID
-    async getTaskById(id: string): Promise<Task> {
-        const task: Task = await this.findOne(id);
+    async getTaskById(id: string, user: User): Promise<Task> {
+        const task: Task = await this.findOne({ where: { id, user } });
         if (!task)
             throw new NotFoundException('Task Not Found');
         return task;
@@ -38,23 +38,25 @@ export class TaskRepository extends Repository<Task>{
     }
 
     //* For Delete Task
-    async deleteTaskById(id: string): Promise<void> {
-        const result: DeleteResult = await this.delete(id);
+    async deleteTaskById(id: string, user: User): Promise<void> {
+        const result: DeleteResult = await this.delete({ id, user });
         if (result.affected === 0)
             throw new NotFoundException('Task Not Found');
     }
 
     //* Update Task Status
-    async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
-        const task: Task = await this.getTaskById(id);
+    async updateTaskStatus(id: string, status: TaskStatus, user: User): Promise<Task> {
+        const task: Task = await this.getTaskById(id, user);
         task.status = status;
         await this.save(task);
         return task;
     }
 
-    async getTaskThruFilter(getTasksFilterDto: GetTasksFilterDto): Promise<Task[]> {
+    async getTaskThruFilter(getTasksFilterDto: GetTasksFilterDto, user: User,): Promise<Task[]> {
         const { status, search } = getTasksFilterDto;
         const query = this.createQueryBuilder('task');
+
+        query.where({ user });
 
         if (status) {
             query.andWhere('task.status = :status', { status });

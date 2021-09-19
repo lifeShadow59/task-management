@@ -13,26 +13,26 @@ export class TasksService {
       private taskRepository: TaskRepository) { }
 
    getAllTasks(): Promise<Task[]> {
-      return this.getAllTasks();
+      return this.taskRepository.getAllTasks();
    }
 
-   getTaskById(id: string): Promise<Task> {
-      return this.taskRepository.getTaskById(id);
+   getTaskById(id: string, user: User): Promise<Task> {
+      return this.taskRepository.getTaskById(id, user);
    }
 
-   deleteTaskById(id: string): Promise<void> {
-      return this.taskRepository.deleteTaskById(id);
+   deleteTaskById(id: string, user: User): Promise<void> {
+      return this.taskRepository.deleteTaskById(id, user);
    }
 
-   updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
-      return this.taskRepository.updateTaskStatus(id, status);
+   updateTaskStatus(id: string, status: TaskStatus, user: User): Promise<Task> {
+      return this.taskRepository.updateTaskStatus(id, status, user);
    }
 
    createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
       return this.taskRepository.createTask(createTaskDto, user);
    }
 
-   getTaskThruFilter(getTasksFilterDto: GetTasksFilterDto): Promise<Task[]> {
-      return this.taskRepository.getTaskThruFilter(getTasksFilterDto);
+   getTaskThruFilter(getTasksFilterDto: GetTasksFilterDto, user: User,): Promise<Task[]> {
+      return this.taskRepository.getTaskThruFilter(getTasksFilterDto, user);
    }
 }
