@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { AuthRepository } from "./auth.repository";
 import { SignUpCredentialsDto } from "./dto/signup-credentials.dto";
 import { JwtPayloadInterface } from "./jwt-payload.interface";
+import { User } from "./user.entity";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,12 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         });
     }
-    async validate(jwtPayloadInterface: JwtPayloadInterface): Promise<void> {
+    async validate(jwtPayloadInterface: JwtPayloadInterface): Promise<User> {
         const { email } = jwtPayloadInterface;
-        const _user: SignUpCredentialsDto = await this.authRepository.findOne({ email });
+        const _user: User = await this.authRepository.findOne({ email });
         if (!_user) {
             throw new UnauthorizedException();
         }
-        return;
+        return _user;
     }
 }
